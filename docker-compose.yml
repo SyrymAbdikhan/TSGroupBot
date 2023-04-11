@@ -1,0 +1,17 @@
+version: '3.8'
+
+networks:
+    web:
+        external: true
+
+services:
+    bot:
+        build: .
+        container_name: tsmf
+        command: python -m bot
+        restart: always
+        env_file:
+            - .env
+        networks:
+            - web
+
