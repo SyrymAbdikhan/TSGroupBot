@@ -4,12 +4,12 @@ from itertools import zip_longest
 from bot.loader import bot
 
 
-async def send_message(event, text, reply=False, file=None):
+async def send_message(event, text, reply=False, file=None, keyboard=None):
     async with bot.action(event.chat_id, 'typing'):
         if reply:
-            msg = await event.reply(text, file=file)
+            msg = await event.reply(text, file=file, buttons=keyboard)
         else:
-            msg = await event.respond(text, file=file)
+            msg = await event.respond(text, file=file, buttons=keyboard)
         return msg
 
 

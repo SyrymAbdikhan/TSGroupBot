@@ -10,3 +10,4 @@ bot = TelegramClient(
     config.bot.api_hash
 )
 bot.config = config.bot
+bot.db_config = config.db
