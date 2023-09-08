@@ -15,6 +15,13 @@ class Bot:
 
 
 @dataclass
+class Moodle:
+    token: str
+    url: str
+    wsfunc: str
+
+
+@dataclass
 class DB:
     host: str
     port: int
@@ -26,6 +33,7 @@ class DB:
 @dataclass
 class Config:
     bot: Bot
+    moodle: Moodle
     db: DB
 
 
@@ -39,6 +47,11 @@ def load_config():
             api_hash=getenv('API_HASH'),
             admin_id=int(getenv('ADMIN_ID')),
             msg_size=int(getenv('MSG_SIZE')),
+        ),
+        moodle=Moodle(
+            token=getenv('MOODLE_TOKEN'),
+            url=getenv('URL'),
+            wsfunc=getenv('WSFUNCTION')
         ),
         db=DB(
             host=getenv('DB_HOST'),
