@@ -11,3 +11,4 @@ bot = TelegramClient(
 )
 bot.config = config.bot
 bot.db_config = config.db
+bot.md_config = config.moodle

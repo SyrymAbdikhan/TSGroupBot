@@ -1,11 +1,8 @@
 
-import logging
-import re
-
 from telethon import events
 
 from bot.loader import bot
-from bot.utils.funcs import *
+from bot.utils.funcs import send_message
 from bot.utils.decorators import logger
 
 
@@ -33,21 +30,3 @@ async def chat_action(event):
         await send_message(event, 'Welcome to the group!')
     elif event.user_left or event.user_kicked:
         await send_message(event, 'R.I.P 💔')
-
-
-@bot.on(events.NewMessage(pattern=r'/all'))
-@bot.on(events.NewMessage(pattern=r'^@all$'))
-@logger
-async def cmd_all(event):
-    if event.is_private:
-        return await send_message(event, 'Add me to the group to use this command', reply=True)
-
-    ids = await get_member_ids(event.chat_id)
-    mentions = [make_tag(_id) for _id in ids]
-
-    texts = groupby(mentions, bot.config.msg_size, '')
-    texts = list(map(lambda el: ''.join(el), texts))
-    texts[0] = 'Calling mates ඞ...\n\n' + texts[0]
-
-    for text in texts:
-        await send_message(event, text)
