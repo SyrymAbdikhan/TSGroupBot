@@ -3,6 +3,8 @@ import logging
 
 from telethon.events import NewMessage, ChatAction
 
+from bot.utils.funcs import send_message
+
 
 def logger(func):
     async def wrapper(event):
@@ -15,3 +17,10 @@ def logger(func):
         return await func(event)
     return wrapper
 
+
+def is_group(func):
+    async def wrapper(event):
+        if event.is_private:
+            return await send_message(event, 'Add me to the group to use this command', reply=True)
+        return await func(event)
+    return wrapper

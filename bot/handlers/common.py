@@ -27,6 +27,6 @@ async def cmd_help(event):
 @logger
 async def chat_action(event):
     if event.user_joined or event.user_added:
-        await send_message(event, 'Welcome to the group!')
+        await send_message(event, '🥳 Welcome to the group mate!')
     elif event.user_left or event.user_kicked:
-        await send_message(event, 'R.I.P 💔')
+        await send_message(event, '💔 Press F to pay respect...')

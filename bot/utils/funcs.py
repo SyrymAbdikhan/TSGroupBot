@@ -1,7 +1,12 @@
 
+import requests
+from datetime import datetime
 from itertools import zip_longest
 
 from bot.loader import bot
+
+offset = datetime.timedelta(hours=6)
+tz = datetime.timezone(offset)
 
 
 async def send_message(event, text, reply=False, file=None, keyboard=None):
@@ -11,6 +16,18 @@ async def send_message(event, text, reply=False, file=None, keyboard=None):
         else:
             msg = await event.respond(text, file=file, buttons=keyboard)
         return msg
+
+
+def get_moodle_events(token):
+    moodle = bot.md_config
+    payload = {
+        "wstoken": token,
+        "moodlewsrestformat": "json",
+        "wsfunction": moodle.wsfunc,
+        "timesortfrom": int(datetime.now(tz=tz).timestamp())
+    }
+    response = requests.get(moodle.url, payload)
+    return response.json()['events']
 
 
 async def get_member_ids(chat_id):
