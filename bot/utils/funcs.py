@@ -1,12 +1,14 @@
 
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from itertools import zip_longest
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.loader import bot
 
-offset = datetime.timedelta(hours=6)
-tz = datetime.timezone(offset)
+offset = timedelta(hours=6)
+tz = timezone(offset)
 
 
 async def send_message(event, text, reply=False, file=None, keyboard=None):
@@ -27,7 +29,7 @@ def get_moodle_events(token):
         "timesortfrom": int(datetime.now(tz=tz).timestamp())
     }
     response = requests.get(moodle.url, payload)
-    return response.json()['events']
+    return response.json().get('events')
 
 
 async def get_member_ids(chat_id):
@@ -45,3 +47,8 @@ def groupby(iterable, chunk_size, filler=None):
         *[iter(iterable)] * chunk_size,
         fillvalue=filler
     )
+
+
+async def get_db(db_session: AsyncSession) -> AsyncSession:
+    async with db_session() as session:
+        return session

@@ -9,18 +9,22 @@ from bot.utils.decorators import logger
 @bot.on(events.NewMessage(pattern=r'/start'))
 @logger
 async def cmd_start(event):
-    await send_message(event, 'Hello! I\'m assistant bot specially made for TS MF group.'
+    await send_message(event, 'Hello! I\'m assistant bot for your group.'
                               'Type /help for more information')
 
 
 @bot.on(events.NewMessage(pattern=r'/help'))
 @logger
 async def cmd_help(event):
-    await send_message(event, 'Here is the bot commands:\n\n'
-                              '/all - mention all members of the group\n'
-                              '/deadlines - shows all deadlines\n'
-                              '/help - more information about bot\n\n'
-                              'Developer contacts: @Honey_Niisan')
+    text = 'Here is the bot commands:\n\n' \
+           '/call - mention all members of the group\n' \
+           '/deadlines - shows all deadlines\n' \
+           '/settoken - sets moodle token to get deadlines\n' \
+           '/help - more information about bot\n\n' \
+           'To get token, go to moodle > profile > ⚙️ Security keys > Moodle mobile web service\n\n' \
+           'Developer contacts: @Honey_Niisan'
+
+    await send_message(event, text, reply=True)
 
 
 @bot.on(events.ChatAction())

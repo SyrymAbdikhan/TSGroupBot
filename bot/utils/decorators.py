@@ -21,6 +21,6 @@ def logger(func):
 def is_group(func):
     async def wrapper(event):
         if event.is_private:
-            return await send_message(event, 'Add me to the group to use this command', reply=True)
+            return await send_message(event, '❗️Add me to the group to use this command', reply=True)
         return await func(event)
     return wrapper

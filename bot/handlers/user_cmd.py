@@ -5,11 +5,38 @@ from telethon import events
 
 from bot.loader import bot
 from bot.utils.funcs import (send_message, get_moodle_events,
-                             get_member_ids, make_tag, groupby, tz)
+                             get_member_ids, make_tag, groupby,
+                             get_db, tz)
 from bot.utils.decorators import logger, is_group
+from bot.db.models import ChatSettings
 
 
-@bot.on(events.NewMessage(pattern=r'^(/|@)all'))
+@bot.on(events.NewMessage(pattern=r'^/settoken'))
+@logger
+@is_group
+async def cmd_settoken(event):
+    db_session = await get_db(bot.db)
+    
+    args = event.text.split()
+    if len(args) < 2:
+        return await send_message(event, '❗️Too less arguments!\n/settoken <token>', reply=True)
+    elif len(args) > 2:
+        return await send_message(event, '❗️Too many arguments!\n/settoken <token>', reply=True)
+    
+    token = args[1]
+    chat = await ChatSettings.find(db_session, event.chat_id)
+    if chat is None:
+        chat = ChatSettings(chat_id=event.chat_id, moodle_token=token)
+    else:
+        chat.moodle_token = token
+    
+    await chat.save(db_session)
+    
+    await send_message(event, '✅ Successfully set token! New commands available now', reply=True)
+    await db_session.close()
+
+
+@bot.on(events.NewMessage(pattern=r'^(/call|@all)'))
 @logger
 @is_group
 async def cmd_all(event):
@@ -28,7 +55,14 @@ async def cmd_all(event):
 @logger
 @is_group
 async def cmd_deadlines(event):
-    moodle_events = get_moodle_events(bot.md_config.token)
+    db_session = await get_db(bot.db)
+    chat = await ChatSettings.find(db_session, event.chat_id)
+    if chat is None:
+        return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
+        
+    moodle_events = get_moodle_events(chat.moodle_token)
+    if moodle_events is None:
+        return await send_message(event, '❗️Invalid token, please check your token', reply=True)
     
     text = '🥳 No Deadlines for now'
     if moodle_events:
@@ -41,4 +75,5 @@ async def cmd_deadlines(event):
                 f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n\n'
     
     await send_message(event, text, reply=True)
+    await db_session.close()
     
