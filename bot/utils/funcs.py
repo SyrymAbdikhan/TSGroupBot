@@ -21,15 +21,42 @@ async def send_message(event, text, reply=False, file=None, keyboard=None):
 
 
 def get_moodle_events(token):
+    current_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    shifted_date = get_next_month(current_date.replace(day=1))
+    timestamp = (current_date - datetime(1970,1,1) - offset).total_seconds()
+
+    events = []
+    events += get_events(token, current_date.year, current_date.month)
+    events += get_events(token, shifted_date.year, shifted_date.month)
+    
+    events = list(filter(lambda x: x['eventtype'] == 'due', events))
+    events = list(filter(lambda x: x['timestart'] > timestamp, events))
+    
+    return events
+
+
+def get_events(token, year, month):
     moodle = bot.md_config
     payload = {
-        "wstoken": token,
-        "moodlewsrestformat": "json",
-        "wsfunction": moodle.wsfunc,
-        "timesortfrom": int(datetime.now(tz=tz).timestamp())
+        'wstoken': token,
+        'moodlewsrestformat': 'json',
+        'wsfunction': 'core_calendar_get_calendar_monthly_view',
+        'year': year,
+        'month': month
     }
+
     response = requests.get(moodle.url, payload)
-    return response.json().get('events')
+    data = response.json()
+    events = [event for week in data['weeks'] for day in week['days'] for event in day['events']]
+        
+    return events
+
+
+def get_next_month(date):
+    if date.month == 12:
+        return datetime(date.year + 1, 1, 1)
+    else:
+        return datetime(date.year, date.month + 1, 1) 
 
 
 async def get_member_ids(chat_id):
