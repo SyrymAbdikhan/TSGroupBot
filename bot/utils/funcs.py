@@ -12,12 +12,11 @@ tz = timezone(offset)
 
 
 async def send_message(event, text, reply=False, file=None, keyboard=None):
-    async with bot.action(event.chat_id, 'typing'):
-        if reply:
-            msg = await event.reply(text, file=file, buttons=keyboard)
-        else:
-            msg = await event.respond(text, file=file, buttons=keyboard)
-        return msg
+    if reply:
+        msg = await event.reply(text, file=file, buttons=keyboard)
+    else:
+        msg = await event.respond(text, file=file, buttons=keyboard)
+    return msg
 
 
 def get_moodle_events(token):

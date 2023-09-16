@@ -7,13 +7,14 @@ from bot.loader import bot
 from bot.utils.funcs import (send_message, get_moodle_events,
                              get_member_ids, make_tag, groupby,
                              get_db, get_largest_unit, tz)
-from bot.utils.decorators import logger, is_group
+from bot.utils.decorators import logger, is_group, type_action
 from bot.db.models import ChatSettings
 
 
 @bot.on(events.NewMessage(pattern=r'^/settoken'))
 @logger
 @is_group
+@type_action
 async def cmd_settoken(event):
     db_session = await get_db(bot.db)
     
@@ -39,6 +40,7 @@ async def cmd_settoken(event):
 @bot.on(events.NewMessage(pattern=r'^(/call|@all)'))
 @logger
 @is_group
+@type_action
 async def cmd_all(event):
     ids = await get_member_ids(event.chat_id)
     mentions = [make_tag(_id) for _id in ids]
@@ -54,6 +56,7 @@ async def cmd_all(event):
 @bot.on(events.NewMessage(pattern=r'^/deadlines'))
 @logger
 @is_group
+@type_action
 async def cmd_deadlines(event):
     db_session = await get_db(bot.db)
     chat = await ChatSettings.find(db_session, event.chat_id)

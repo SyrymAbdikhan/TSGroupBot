@@ -3,6 +3,7 @@ import logging
 
 from telethon.events import NewMessage, ChatAction
 
+from bot.loader import bot
 from bot.utils.funcs import send_message
 
 
@@ -23,4 +24,11 @@ def is_group(func):
         if event.is_private:
             return await send_message(event, '❗️Add me to the group to use this command', reply=True)
         return await func(event)
+    return wrapper
+
+
+def type_action(func):
+    async def wrapper(event):
+        async with bot.action(event.chat_id, 'typing'):
+            return await func(event)
     return wrapper
