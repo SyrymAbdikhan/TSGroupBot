@@ -20,9 +20,11 @@ async def cmd_settoken(event):
     
     args = event.text.split()
     if len(args) < 2:
-        return await send_message(event, '❗️Too less arguments!\n/settoken <token>', reply=True)
+        await send_message(event, '❗️Too less arguments!\n/settoken <token>', reply=True)
+        return await db_session.close()
     elif len(args) > 2:
-        return await send_message(event, '❗️Too many arguments!\n/settoken <token>', reply=True)
+        await send_message(event, '❗️Too many arguments!\n/settoken <token>', reply=True)
+        return await db_session.close()
     
     token = args[1]
     chat = await ChatSettings.find(db_session, event.chat_id)
@@ -61,11 +63,13 @@ async def cmd_deadlines(event):
     db_session = await get_db(bot.db)
     chat = await ChatSettings.find(db_session, event.chat_id)
     if chat is None:
-        return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
-        
+        await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
+        return await db_session.close()
+    
     moodle_events = get_moodle_events(chat.moodle_token)
     if moodle_events is None:
-        return await send_message(event, '❗️Invalid token, please check your token', reply=True)
+        await send_message(event, '❗️Invalid token, please check your token', reply=True)
+        return await db_session.close()
     
     text = '🥳 No Deadlines for now'
     if moodle_events:

@@ -1,13 +1,14 @@
 
 from bot.db.base import Base
 
-from sqlalchemy import Column, BigInteger, Text, select
+from sqlalchemy import Column, BigInteger, Text, Boolean, select
 
 
 class ChatSettings(Base):
     __tablename__ = 'chat_settings'
 
     chat_id = Column(BigInteger, unique=True, primary_key=True)
+    active = Column(Boolean, default=True)
     moodle_token = Column(Text)
 
     @classmethod
