@@ -56,7 +56,29 @@ def get_next_month(date):
     if date.month == 12:
         return datetime(date.year + 1, 1, 1)
     else:
-        return datetime(date.year, date.month + 1, 1) 
+        return datetime(date.year, date.month + 1, 1)
+
+
+def get_largest_unit(dtime):
+    if dtime.days > 0:
+        return f'{dtime.days} days'
+
+    if dtime.days < 0:
+        return 'no time'
+
+    m, s = divmod(dtime.seconds, 60)
+    h, m = divmod(m, 60)
+
+    if h > 0:
+        return f'{h} hour{"s" if h > 1 else ""}'
+
+    if m > 0:
+        return f'{m} minute{"s" if m > 1 else ""}'
+
+    if s > 0:
+        return f'{s} second{"s" if s > 1 else ""}'
+
+    return 'no time'
 
 
 async def get_member_ids(chat_id):
