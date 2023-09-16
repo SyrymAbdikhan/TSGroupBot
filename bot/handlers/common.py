@@ -33,7 +33,6 @@ async def cmd_help(event):
 
 @bot.on(events.ChatAction())
 @logger
-@type_action
 async def chat_action(event):
     db_session = await get_db(bot.db)
     
