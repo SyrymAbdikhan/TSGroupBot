@@ -20,9 +20,9 @@ async def send_message(event, text, reply=False, file=None, keyboard=None):
 
 
 def get_moodle_events(token):
-    current_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    current_date = datetime.now(tz=tz)
     shifted_date = get_next_month(current_date.replace(day=1))
-    timestamp = (current_date - datetime(1970,1,1) - offset).total_seconds()
+    timestamp = (current_date - datetime(1970,1,1,tzinfo=tz) - offset).total_seconds()
 
     events = []
     events += get_events(token, current_date.year, current_date.month)
