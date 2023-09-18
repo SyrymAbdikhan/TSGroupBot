@@ -6,7 +6,7 @@ from telethon import events
 from bot.loader import bot
 from bot.utils.funcs import (send_message, get_moodle_events,
                              get_member_ids, make_tag, groupby,
-                             get_db, get_largest_unit, tz)
+                             get_db, format_time, tz)
 from bot.utils.decorators import logger, is_group, type_action
 from bot.db.models import ChatSettings
 
@@ -78,7 +78,7 @@ async def cmd_deadlines(event):
     for i, moodle_event in enumerate(moodle_events):
         dtime = datetime.fromtimestamp(int(moodle_event['timestart']), tz=tz)
         tleft = (dtime - datetime.now(tz=tz).replace(microsecond=0))
-        tleft = get_largest_unit(tleft)
+        tleft = format_time(tleft)
         text += f'{i+1}. 📚 {moodle_event["course"]["fullname"]}\n' \
                 f'📝 {moodle_event["name"]}\n' \
                 f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n' \

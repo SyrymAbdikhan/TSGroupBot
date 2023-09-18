@@ -58,24 +58,29 @@ def get_next_month(date):
         return datetime(date.year, date.month + 1, 1)
 
 
-def get_largest_unit(dtime):
-    if dtime.days > 0:
-        return f'{dtime.days} days'
-
+def format_time(dtime):
     if dtime.days < 0:
         return 'no time'
 
+    units = []
     m, s = divmod(dtime.seconds, 60)
     h, m = divmod(m, 60)
+    
+    if dtime.days > 0:
+        units.append(f'{dtime.days} days')
 
     if h > 0:
-        return f'{h} hour{"s" if h > 1 else ""}'
+        units.append(f'{h} hour{"s" if h > 1 else ""}')
 
     if m > 0:
-        return f'{m} minute{"s" if m > 1 else ""}'
+        units.append(f'{m} minute{"s" if m > 1 else ""}')
 
-    if s > 0:
-        return f'{s} second{"s" if s > 1 else ""}'
+    if s > 0 and dtime.days <= 0 and h == 0:
+        units.append(f'{s} second{"s" if s > 1 else ""}')
+
+    text = ' '.join(units)
+    if text:
+        return text
 
     return 'no time'
 
