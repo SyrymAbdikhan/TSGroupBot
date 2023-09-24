@@ -9,6 +9,7 @@ from bot.loader import bot
 
 offset = timedelta(hours=6)
 tz = timezone(offset)
+allowed_types = ('due', 'close')
 
 
 async def send_message(event, text, reply=False, file=None, keyboard=None):
@@ -20,16 +21,19 @@ async def send_message(event, text, reply=False, file=None, keyboard=None):
 
 
 def get_moodle_events(token):
-    current_date = datetime.now(tz=tz)
-    shifted_date = get_next_month(current_date.replace(day=1))
-    timestamp = (current_date - datetime(1970,1,1,tzinfo=tz) - offset).total_seconds()
+    current_date = datetime.now(tz=tz).replace(hour=0, minute=0, second=0, microsecond=0)
+    current_td = current_date - datetime(1970,1,1,tzinfo=tz) - offset
+    timestamp_start = current_td.total_seconds()
+    timestamp_end = (current_td + timedelta(days=60)).total_seconds()
 
     events = []
-    events += get_events(token, current_date.year, current_date.month)
-    events += get_events(token, shifted_date.year, shifted_date.month)
+    next_date = current_date.replace(day=1)
+    for _ in range(3):
+        events += get_events(token, next_date.year, next_date.month)
+        next_date = get_next_month(next_date)
     
-    events = list(filter(lambda x: x['eventtype'] == 'due', events))
-    events = list(filter(lambda x: x['timestart'] > timestamp, events))
+    events = [event for event in events if event['eventtype'] in allowed_types]
+    events = [event for event in events if timestamp_start < event['timestart'] < timestamp_end]
     
     return events
 
