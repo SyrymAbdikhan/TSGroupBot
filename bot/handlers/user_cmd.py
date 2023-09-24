@@ -80,7 +80,7 @@ async def cmd_deadlines(event):
         tleft = (dtime - datetime.now(tz=tz).replace(microsecond=0))
         tleft = format_time(tleft)
         text += f'{i+1}. 📚 {moodle_event["course"]["fullname"]}\n' \
-                f'📝 {moodle_event["name"]}\n' \
+                f'📝 [{moodle_event["name"]}]({moodle_event["url"]})\n' \
                 f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n' \
                 f'⏳ {tleft} left\n\n'
     
