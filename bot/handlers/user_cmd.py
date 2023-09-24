@@ -62,14 +62,14 @@ async def cmd_all(event):
 async def cmd_deadlines(event):
     db_session = await get_db(bot.db)
     chat = await ChatSettings.find(db_session, event.chat_id)
+    await db_session.close()
+    
     if chat is None:
-        await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
-        return await db_session.close()
+        return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
     
     moodle_events = get_moodle_events(chat.moodle_token)
     if moodle_events is None:
-        await send_message(event, '❗️Invalid token, please check your token', reply=True)
-        return await db_session.close()
+        return await send_message(event, '❗️Invalid token, please check your token', reply=True)
     
     text = '🥳 No Deadlines for now'
     if moodle_events:
@@ -85,5 +85,4 @@ async def cmd_deadlines(event):
                 f'⏳ {tleft} left\n\n'
     
     await send_message(event, text, reply=True)
-    await db_session.close()
     
