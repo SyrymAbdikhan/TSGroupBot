@@ -12,11 +12,11 @@ tz = timezone(offset)
 allowed_types = ('due', 'close')
 
 
-async def send_message(event, text, reply=False, file=None, keyboard=None):
+async def send_message(event, text, reply=False, **kwargs):
     if reply:
-        msg = await event.reply(text, file=file, buttons=keyboard)
+        msg = await event.reply(text, **kwargs)
     else:
-        msg = await event.respond(text, file=file, buttons=keyboard)
+        msg = await event.respond(text, **kwargs)
     return msg
 
 

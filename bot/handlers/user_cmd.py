@@ -84,5 +84,5 @@ async def cmd_deadlines(event):
                 f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n' \
                 f'⏳ {tleft} left\n\n'
     
-    await send_message(event, text, reply=True)
+    await send_message(event, text, reply=True, link_preview=False)
     
