@@ -62,4 +62,4 @@ async def chat_action(event):
     elif event.user_left or event.user_kicked:
         await send_message(event, '💔 Press F to pay respect...')
     
-    db_session.close()
+    await db_session.close()

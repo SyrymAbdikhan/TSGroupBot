@@ -21,7 +21,7 @@ async def send_message(event, text, reply=False, **kwargs):
 
 
 def get_moodle_events(token):
-    current_date = datetime.now(tz=tz).replace(hour=0, minute=0, second=0, microsecond=0)
+    current_date = datetime.now(tz=tz)
     current_td = current_date - datetime(1970,1,1,tzinfo=tz) - offset
     timestamp_start = current_td.total_seconds()
     timestamp_end = (current_td + timedelta(days=60)).total_seconds()
@@ -32,9 +32,7 @@ def get_moodle_events(token):
         events += get_events(token, next_date.year, next_date.month)
         next_date = get_next_month(next_date)
     
-    events = [event for event in events if event['eventtype'] in allowed_types]
-    events = [event for event in events if timestamp_start < event['timestart'] < timestamp_end]
-    
+    events = [event for event in events if event['eventtype'] in allowed_types and timestamp_start < event['timestart'] < timestamp_end]
     return events
 
 
