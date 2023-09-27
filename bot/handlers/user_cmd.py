@@ -67,7 +67,7 @@ async def cmd_deadlines(event):
     if chat is None:
         return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
     
-    moodle_events = get_moodle_events(chat.moodle_token)
+    moodle_events = await get_moodle_events(chat.moodle_token)
     if moodle_events is None:
         return await send_message(event, '❗️Invalid token, please check your token', reply=True)
     

@@ -1,5 +1,5 @@
 
-import requests
+import aiohttp
 from datetime import datetime, timedelta, timezone
 from itertools import zip_longest
 
@@ -20,7 +20,7 @@ async def send_message(event, text, reply=False, **kwargs):
     return msg
 
 
-def get_moodle_events(token):
+async def get_moodle_events(token):
     current_date = datetime.now(tz=tz)
     current_td = current_date - datetime(1970,1,1,tzinfo=tz) - offset
     timestamp_start = current_td.total_seconds()
@@ -29,14 +29,14 @@ def get_moodle_events(token):
     events = []
     next_date = current_date.replace(day=1)
     for _ in range(3):
-        events += get_events(token, next_date.year, next_date.month)
+        events += await get_events(token, next_date.year, next_date.month)
         next_date = get_next_month(next_date)
     
     events = [event for event in events if event['eventtype'] in allowed_types and timestamp_start < event['timestart'] < timestamp_end]
     return events
 
 
-def get_events(token, year, month):
+async def get_events(token, year, month):
     moodle = bot.md_config
     payload = {
         'wstoken': token,
@@ -46,10 +46,11 @@ def get_events(token, year, month):
         'month': month
     }
 
-    response = requests.get(moodle.url, payload)
-    data = response.json()
-    events = [event for week in data['weeks'] for day in week['days'] for event in day['events']]
-        
+    async with aiohttp.ClientSession() as session:
+        async with session.get(moodle.url, params=payload) as resp:
+            data = await resp.json()
+    
+    events = [event for week in data['weeks'] for day in week['days'] for event in day['events']]    
     return events
 
 
