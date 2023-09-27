@@ -26,14 +26,15 @@ async def get_moodle_events(token):
     timestamp_start = current_td.total_seconds()
     timestamp_end = (current_td + timedelta(days=60)).total_seconds()
 
-    events = []
+    data = {'events': [], 'errors': []}
     next_date = current_date.replace(day=1)
     for _ in range(3):
-        events += await get_events(token, next_date.year, next_date.month)
+        resp = await get_events(token, next_date.year, next_date.month)
+        merge_dict_lists(data, resp)
         next_date = get_next_month(next_date)
     
-    events = [event for event in events if event['eventtype'] in allowed_types and timestamp_start < event['timestart'] < timestamp_end]
-    return events
+    data['events'] = [event for event in data['events'] if event['eventtype'] in allowed_types and timestamp_start < event['timestart'] < timestamp_end]
+    return data
 
 
 async def get_events(token, year, month):
@@ -50,8 +51,12 @@ async def get_events(token, year, month):
         async with session.get(moodle.url, params=payload) as resp:
             data = await resp.json()
     
-    events = [event for week in data['weeks'] for day in week['days'] for event in day['events']]    
-    return events
+    events = [event for week in data.get('weeks', {}) for day in week.get('days', {}) for event in day.get('events', {})]
+    errors = []
+    if data.get('errorcode'):
+        errors.append(data.get('errorcode'))
+
+    return {'events': events, 'errors': errors}
 
 
 def get_next_month(date):
@@ -59,6 +64,11 @@ def get_next_month(date):
         return datetime(date.year + 1, 1, 1)
     else:
         return datetime(date.year, date.month + 1, 1)
+
+
+def merge_dict_lists(dct, merge_dct):
+    for k in merge_dct.keys():
+        dct[k] += merge_dct[k]
 
 
 def format_time(dtime):
@@ -73,13 +83,13 @@ def format_time(dtime):
         units.append(f'{dtime.days} days')
 
     if h > 0:
-        units.append(f'{h} hour{"s" if h > 1 else ""}')
+        units.append(f'{h} hr{"s" if h > 1 else ""}')
 
     if m > 0:
-        units.append(f'{m} minute{"s" if m > 1 else ""}')
+        units.append(f'{m} min{"s" if m > 1 else ""}')
 
     if s > 0 and dtime.days <= 0 and h == 0:
-        units.append(f'{s} second{"s" if s > 1 else ""}')
+        units.append(f'{s} sec{"s" if s > 1 else ""}')
 
     text = ' '.join(units)
     if text:

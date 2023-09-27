@@ -68,14 +68,22 @@ async def cmd_deadlines(event):
         return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
     
     moodle_events = await get_moodle_events(chat.moodle_token)
-    if moodle_events is None:
-        return await send_message(event, '❗️Invalid token, please check your token', reply=True)
+    if moodle_events['errors']:
+        if 'invalidtoken' in moodle_events['errors']:
+            return await send_message(event, '❗️Invalid token, please check your token', reply=True)
+        else:
+            errors = '\n'.join([
+                ' – ' + error
+                for error in moodle_events['errors']
+            ])
+            text = f'❗️Unknown error:\n{errors}\n\nPlease contact the developer: @honey_niisan'
+            return await send_message(event, text, reply=True)
     
     text = '🥳 No Deadlines for now'
     if moodle_events:
         text = '💀 All deadlines:\n\n'
     
-    for i, moodle_event in enumerate(moodle_events):
+    for i, moodle_event in enumerate(moodle_events['events']):
         dtime = datetime.fromtimestamp(int(moodle_event['timestart']), tz=tz)
         tleft = (dtime - datetime.now(tz=tz).replace(microsecond=0))
         tleft = format_time(tleft)
