@@ -83,11 +83,12 @@ async def cmd_deadlines(event):
     if moodle_events:
         text = '💀 All deadlines:\n\n'
     
+    dtnow = datetime.now(tz=tz).replace(microsecond=0)
     for i, moodle_event in enumerate(moodle_events['events']):
         dtime = datetime.fromtimestamp(int(moodle_event['timestart']), tz=tz)
-        tleft = (dtime - datetime.now(tz=tz).replace(microsecond=0))
-        tleft = format_time(tleft)
-        text += f'{i+1}. 📚 {moodle_event["course"]["fullname"]}\n' \
+        tleft = format_time(dtime - dtnow)
+        course_name = moodle_event['course']['fullname'].split(' | ')[0]
+        text += f'{i+1}. 📚 {course_name}\n' \
                 f'📝 [{moodle_event["name"]}]({moodle_event["url"]})\n' \
                 f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n' \
                 f'⏳ {tleft} left\n\n'
