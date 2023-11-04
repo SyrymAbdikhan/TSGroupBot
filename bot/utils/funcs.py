@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from itertools import zip_longest
 
 import aiohttp
-from aiohttp.client_exceptions import ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.loader import bot
