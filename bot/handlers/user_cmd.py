@@ -71,13 +71,13 @@ async def cmd_deadlines(event):
     if moodle_events['errors']:
         if 'invalidtoken' in moodle_events['errors']:
             return await send_message(event, '❗️Invalid token, please check your token', reply=True)
-        else:
-            errors = '\n'.join([
-                ' – ' + error
-                for error in moodle_events['errors']
-            ])
-            text = f'❗️Unknown error:\n{errors}\n\nPlease contact the developer: @honey_niisan'
-            return await send_message(event, text, reply=True)
+        
+        errors = '\n'.join([
+            ' – ' + error
+            for error in set(moodle_events['errors'])
+        ])
+        text = f'❗️Unknown error:\n{errors}\n\nPlease contact the developer: @honey_niisan'
+        return await send_message(event, text, reply=True)
     
     text = '🥳 No Deadlines for now'
     if moodle_events:

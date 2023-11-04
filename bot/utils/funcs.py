@@ -1,8 +1,9 @@
 
-import aiohttp
 from datetime import datetime, timedelta, timezone
 from itertools import zip_longest
 
+import aiohttp
+from aiohttp.client_exceptions import ClientConnectorError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.loader import bot
@@ -48,8 +49,11 @@ async def get_events(token, year, month):
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(moodle.url, params=payload) as resp:
-            data = await resp.json()
+        try:
+            async with session.get(moodle.url, params=payload) as resp:
+                data = await resp.json()
+        except Exception as e:
+            return {'events': [], 'errors': [e.__class__.__name__]}
     
     events = [event for week in data.get('weeks', {}) for day in week.get('days', {}) for event in day.get('events', {})]
     errors = []
