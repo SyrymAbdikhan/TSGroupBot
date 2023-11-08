@@ -1,4 +1,5 @@
 
+import logging
 from datetime import datetime, timedelta, timezone
 from itertools import zip_longest
 
@@ -31,6 +32,9 @@ async def get_moodle_events(token):
     for _ in range(3):
         resp = await get_events(token, next_date.year, next_date.month)
         merge_dict_lists(data, resp)
+        if len(data['errors']) > 0:
+            break
+        
         next_date = get_next_month(next_date)
     
     data['events'] = [event for event in data['events'] if event['eventtype'] in allowed_types and timestamp_start < event['timestart'] < timestamp_end]
@@ -52,6 +56,7 @@ async def get_events(token, year, month):
             async with session.get(moodle.url, params=payload) as resp:
                 data = await resp.json()
         except Exception as e:
+            logging.warning(e)
             return {'events': [], 'errors': [e.__class__.__name__]}
     
     events = [event for week in data.get('weeks', {}) for day in week.get('days', {}) for event in day.get('events', {})]
