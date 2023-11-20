@@ -17,7 +17,7 @@ async def send_message(event, text, reply=False, **kwargs):
 
 def get_buttons(webapp_url, token):
     return bot.build_reply_markup([
-        [Button.url('open', f'{webapp_url}?startapp={token}')],
+        [Button.url(text='open', url=f'{webapp_url}?startapp={token}')],
     ])
 
 

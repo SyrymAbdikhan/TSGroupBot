@@ -48,7 +48,7 @@ def load_config():
             api_hash=getenv('API_HASH'),
             admin_id=int(getenv('ADMIN_ID')),
             msg_size=int(getenv('MSG_SIZE')),
-            webapp_url=getenv('WEBAPPURL')
+            webapp_url=getenv('WEBAPP_URL')
         ),
         moodle=Moodle(
             token=getenv('MOODLE_TOKEN'),
