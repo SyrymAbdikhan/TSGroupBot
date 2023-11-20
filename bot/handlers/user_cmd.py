@@ -1,12 +1,10 @@
 
-from datetime import datetime
-
 from telethon import events
 
 from bot.loader import bot
-from bot.utils.funcs import (send_message, get_moodle_events,
+from bot.utils.funcs import (send_message, get_buttons,
                              get_member_ids, make_tag, groupby,
-                             get_db, format_time, tz)
+                             get_db)
 from bot.utils.decorators import logger, is_group, type_action
 from bot.db.models import ChatSettings
 
@@ -39,7 +37,7 @@ async def cmd_settoken(event):
     await db_session.close()
 
 
-@bot.on(events.NewMessage(pattern=r'^(/call|@all)'))
+@bot.on(events.NewMessage(pattern=r'^(/c|@)all'))
 @logger
 @is_group
 @type_action
@@ -67,31 +65,10 @@ async def cmd_deadlines(event):
     if chat is None:
         return await send_message(event, '❗️Please set token (/settoken) to use this command', reply=True)
     
-    moodle_events = await get_moodle_events(chat.moodle_token)
-    if moodle_events['errors']:
-        if 'invalidtoken' in moodle_events['errors']:
-            return await send_message(event, '❗️Invalid token, please check your token', reply=True)
-        
-        errors = '\n'.join([
-            ' – ' + error
-            for error in set(moodle_events['errors'])
-        ])
-        text = f'❗️Unknown error:\n{errors}\n\nPlease contact the developer: @honey_niisan'
-        return await send_message(event, text, reply=True)
-    
-    text = '🥳 No Deadlines for now'
-    if moodle_events:
-        text = '💀 All deadlines:\n\n'
-    
-    dtnow = datetime.now(tz=tz).replace(microsecond=0)
-    for i, moodle_event in enumerate(moodle_events['events']):
-        dtime = datetime.fromtimestamp(int(moodle_event['timestart']), tz=tz)
-        tleft = format_time(dtime - dtnow)
-        course_name = moodle_event['course']['fullname'].split(' | ')[0]
-        text += f'{i+1}. 📚 {course_name}\n' \
-                f'📝 [{moodle_event["name"]}]({moodle_event["url"]})\n' \
-                f'⏰ {dtime.strftime("%B %d, %H:%M:%S")}\n' \
-                f'⏳ {tleft} left\n\n'
-    
-    await send_message(event, text, reply=True, link_preview=False)
+    await send_message(
+        event,
+        'Here is the list of deadlines\nClick to Open 👇',
+        reply=True,
+        buttons=get_buttons(bot.config.webapp_url, chat.moodle_token)
+    )
     

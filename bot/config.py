@@ -12,6 +12,7 @@ class Bot:
     api_hash: str
     admin_id: int
     msg_size: int
+    webapp_url: str
 
 
 @dataclass
@@ -47,10 +48,11 @@ def load_config():
             api_hash=getenv('API_HASH'),
             admin_id=int(getenv('ADMIN_ID')),
             msg_size=int(getenv('MSG_SIZE')),
+            webapp_url=getenv('WEBAPPURL')
         ),
         moodle=Moodle(
             token=getenv('MOODLE_TOKEN'),
-            url=getenv('URL'),
+            url=getenv('MOODLE_URL'),
             wsfunc=getenv('WSFUNCTION')
         ),
         db=DB(
