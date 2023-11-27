@@ -84,6 +84,20 @@ async def create_Q_handler(event: events.NewMessage.Event):
     await event.respond(f'{title}\n\nClick to Join the queue 👇', buttons=get_Q_buttons(add_empty_spaces=3))
 
 
+@bot.on(events.CallbackQuery(pattern='QE[0-9]+'))
+@logger
+@is_group
+async def join_QEn_callback(query: events.CallbackQuery.Event):
+    tag = get_user_tag(query.sender)
+    msg = await query.get_message()
+    btn_rows = msg.reply_markup.rows[:-1]
+    buttons = rows_to_buttons(btn_rows, tag, query.data)
+
+    add = int(buttons[-1][1][:2] == b'QT')
+    await query.edit(msg.message, buttons=get_Q_buttons(buttons, add_empty_spaces=add))
+
+
+
 @bot.on(events.CallbackQuery(pattern='QT[0-9]+'))
 @logger
 @is_group
