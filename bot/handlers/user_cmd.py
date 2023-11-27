@@ -74,6 +74,9 @@ async def cmd_deadlines(event):
 
 
 @bot.on(events.NewMessage(pattern='^/newQ'))
+@logger
+@is_group
+@type_action
 async def create_Q_handler(event: events.NewMessage.Event):
     text = event.text.split(maxsplit=1)
     title = text[1] if len(text) > 1 else 'New Queue'
@@ -82,11 +85,15 @@ async def create_Q_handler(event: events.NewMessage.Event):
 
 
 @bot.on(events.CallbackQuery(pattern='QT[0-9]+'))
+@logger
+@is_group
 async def join_QTn_callback(query: events.CallbackQuery.Event):
     return await query.answer('This place is already taken')
 
 
 @bot.on(events.CallbackQuery(data='quit'))
+@logger
+@is_group
 async def quit_Q_callback(query: events.CallbackQuery.Event):
     tag = get_user_tag(query.sender)
     msg = await query.get_message()
