@@ -73,7 +73,7 @@ async def cmd_deadlines(event):
     )
 
 
-@bot.on(events.NewMessage(pattern='^/newQ'))
+@bot.on(events.NewMessage(pattern='^/newq'))
 @logger
 @is_group
 @type_action
