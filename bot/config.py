@@ -53,7 +53,8 @@ def load_config():
         moodle=Moodle(
             token=getenv('MOODLE_TOKEN'),
             url=getenv('MOODLE_URL'),
-            wsfunc=getenv('WSFUNCTION')
+            wsfunc=getenv('WSFUNCTION'),
+            min_startdate=getenv('MIN_STARTDATE')
         ),
         db=DB(
             host=getenv('DB_HOST'),

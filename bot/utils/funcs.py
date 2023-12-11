@@ -1,4 +1,6 @@
 
+import json
+import base64
 from itertools import zip_longest
 
 from telethon.tl.custom import Button
@@ -15,9 +17,15 @@ async def send_message(event, text, reply=False, **kwargs):
     return msg
 
 
-def get_web_buttons(webapp_url, token):
+def get_web_buttons(token):
+    params = {
+        'token': token,
+        'min_startdate': bot.md_config.min_startdate
+    }
+    params = base64.b64encode(json.dumps(params).encode()).decode()
+    
     return bot.build_reply_markup([
-        [Button.url(text='open', url=f'{webapp_url}?startapp={token}')],
+        [Button.url(text='open', url=f'{bot.config.webapp_url}?startapp={params}')],
     ])
 
 
@@ -74,9 +82,9 @@ def get_user_mention(_id, display_name='ඞ'):
     return f'[{display_name}](tg://user?id={_id})'
 
 
-def groupby(iterable, chunk_size, filler=None):
+def groupby(iterable, filler=None):
     return zip_longest(
-        *[iter(iterable)] * chunk_size,
+        *[iter(iterable)] * bot.config.msg_size,
         fillvalue=filler
     )
 

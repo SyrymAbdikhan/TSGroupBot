@@ -45,7 +45,7 @@ async def cmd_all(event):
     ids = await get_member_ids(event.chat_id)
     mentions = [get_user_mention(_id) for _id in ids]
 
-    texts = groupby(mentions, bot.config.msg_size, '')
+    texts = groupby(mentions, '')
     texts = list(map(lambda el: ''.join(el), texts))
     texts[0] = 'Calling mates ඞ...\n\n' + texts[0]
 
@@ -69,7 +69,7 @@ async def cmd_deadlines(event):
         event,
         'Here is the list of deadlines\nClick to Open 👇',
         reply=True,
-        buttons=get_web_buttons(bot.config.webapp_url, chat.moodle_token)
+        buttons=get_web_buttons(chat.moodle_token)
     )
 
 
