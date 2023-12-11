@@ -3,13 +3,15 @@ import json
 import base64
 from itertools import zip_longest
 
+from telethon.types import ReplyInlineMarkup, User
+from telethon.events import NewMessage
 from telethon.tl.custom import Button
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.loader import bot
 
 
-async def send_message(event, text, reply=False, **kwargs):
+async def send_message(event: NewMessage.Event, text: str, reply: bool = False, **kwargs):
     if reply:
         msg = await event.reply(text, **kwargs)
     else:
@@ -17,7 +19,7 @@ async def send_message(event, text, reply=False, **kwargs):
     return msg
 
 
-def get_web_buttons(token):
+def get_web_buttons(token: str) -> ReplyInlineMarkup:
     params = {
         'token': token,
         'min_startdate': bot.md_config.min_startdate
@@ -29,9 +31,8 @@ def get_web_buttons(token):
     ])
 
 
-def get_Q_buttons(users=None, add_empty_spaces=0):
+def get_Q_buttons(users: list | tuple | None = None, add_empty_spaces: int = 0) -> ReplyInlineMarkup:
     users = users or []
-
     buttons = [
         [Button.inline(text, data)]
         for text, data in users
@@ -46,7 +47,7 @@ def get_Q_buttons(users=None, add_empty_spaces=0):
     return bot.build_reply_markup(buttons)
 
 
-def rows_to_buttons(button_rows, tag=None, target=None):
+def rows_to_buttons(button_rows, tag: str | None = None, target: bytes | None =None) -> list[tuple[str, str]]:
     tag = tag or ''
     buttons = []
     for i, row in enumerate(button_rows):
@@ -64,13 +65,13 @@ def rows_to_buttons(button_rows, tag=None, target=None):
     return buttons
 
 
-async def get_member_ids(chat_id):
+async def get_member_ids(chat_id: int | str) -> list[int]:
     members = await bot.get_participants(chat_id)
     members = tuple(filter(lambda m: not m.bot, members))
     return tuple(map(lambda m: m.id, members))
 
 
-def get_user_tag(user):
+def get_user_tag(user: User) -> str:
     tag = user.first_name
     if user.username:
         tag = '@' + user.username
@@ -78,11 +79,11 @@ def get_user_tag(user):
     return tag
 
 
-def get_user_mention(_id, display_name='ඞ'):
+def get_user_mention(_id: int | str, display_name: str = 'ඞ') -> str:
     return f'[{display_name}](tg://user?id={_id})'
 
 
-def groupby(iterable, filler=None):
+def groupby(iterable: list | tuple, filler: str | None = None) -> list:
     return zip_longest(
         *[iter(iterable)] * bot.config.msg_size,
         fillvalue=filler

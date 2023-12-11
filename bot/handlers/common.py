@@ -11,7 +11,7 @@ from bot.db.models import ChatSettings
 @bot.on(events.NewMessage(pattern=r'/start'))
 @logger
 @type_action
-async def cmd_start(event):
+async def cmd_start(event: events.NewMessage.Event) -> None:
     await send_message(event, 'Hi! I\'m assistant bot for groups. '
                               'Type /help for more information')
 
@@ -19,7 +19,7 @@ async def cmd_start(event):
 @bot.on(events.NewMessage(pattern=r'/help'))
 @logger
 @type_action
-async def cmd_help(event):
+async def cmd_help(event: events.NewMessage.Event) -> None:
     text = 'Here is the bot commands:\n\n' \
            '/call - mention all members of the group\n' \
            '/deadlines - shows all deadlines\n' \
@@ -33,7 +33,7 @@ async def cmd_help(event):
 
 @bot.on(events.ChatAction())
 @logger
-async def chat_action(event):
+async def chat_action(event: events.ChatAction.Event) -> None:
     db_session = await get_db(bot.db)
     
     chat = await ChatSettings.find(db_session, event.chat_id)

@@ -9,11 +9,11 @@ from bot.utils.decorators import logger, is_group, type_action
 from bot.db.models import ChatSettings
 
 
-@bot.on(events.NewMessage(pattern=r'^/settoken'))
+@bot.on(events.NewMessage(pattern=r'/settoken'))
 @logger
 @is_group
 @type_action
-async def cmd_settoken(event):
+async def cmd_settoken(event: events.NewMessage.Event) -> None:
     db_session = await get_db(bot.db)
 
     args = event.text.split()
@@ -37,11 +37,11 @@ async def cmd_settoken(event):
     await db_session.close()
 
 
-@bot.on(events.NewMessage(pattern=r'^(/c|@)all'))
+@bot.on(events.NewMessage(pattern=r'(/c|@)all'))
 @logger
 @is_group
 @type_action
-async def cmd_all(event):
+async def cmd_all(event: events.NewMessage.Event) -> None:
     ids = await get_member_ids(event.chat_id)
     mentions = [get_user_mention(_id) for _id in ids]
 
@@ -53,11 +53,11 @@ async def cmd_all(event):
         await send_message(event, text)
 
 
-@bot.on(events.NewMessage(pattern=r'^/deadlines'))
+@bot.on(events.NewMessage(pattern=r'/deadlines'))
 @logger
 @is_group
 @type_action
-async def cmd_deadlines(event):
+async def cmd_deadlines(event: events.NewMessage.Event) -> None:
     db_session = await get_db(bot.db)
     chat = await ChatSettings.find(db_session, event.chat_id)
     await db_session.close()
@@ -73,21 +73,21 @@ async def cmd_deadlines(event):
     )
 
 
-@bot.on(events.NewMessage(pattern='^/newq'))
+@bot.on(events.NewMessage(pattern=r'/newq'))
 @logger
 @is_group
 @type_action
-async def create_Q_handler(event: events.NewMessage.Event):
+async def create_Q_handler(event: events.NewMessage.Event) -> None:
     text = event.text.split(maxsplit=1)
     title = text[1] if len(text) > 1 else 'New Queue'
 
     await event.respond(f'{title}\n\nClick to Join the queue 👇', buttons=get_Q_buttons(add_empty_spaces=3))
 
 
-@bot.on(events.CallbackQuery(pattern='QE[0-9]+'))
+@bot.on(events.CallbackQuery(pattern=r'QE[0-9]+'))
 @logger
 @is_group
-async def join_QEn_callback(query: events.CallbackQuery.Event):
+async def join_QEn_callback(query: events.CallbackQuery.Event) -> None:
     tag = get_user_tag(query.sender)
     msg = await query.get_message()
     btn_rows = msg.reply_markup.rows[:-1]
@@ -98,17 +98,17 @@ async def join_QEn_callback(query: events.CallbackQuery.Event):
 
 
 
-@bot.on(events.CallbackQuery(pattern='QT[0-9]+'))
+@bot.on(events.CallbackQuery(pattern=r'QT[0-9]+'))
 @logger
 @is_group
-async def join_QTn_callback(query: events.CallbackQuery.Event):
+async def join_QTn_callback(query: events.CallbackQuery.Event) -> None:
     return await query.answer('This place is already taken')
 
 
 @bot.on(events.CallbackQuery(data='quit'))
 @logger
 @is_group
-async def quit_Q_callback(query: events.CallbackQuery.Event):
+async def quit_Q_callback(query: events.CallbackQuery.Event) -> None:
     tag = get_user_tag(query.sender)
     msg = await query.get_message()
     btn_rows = msg.reply_markup.rows[:-1]
