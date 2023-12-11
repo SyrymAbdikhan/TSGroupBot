@@ -3,7 +3,7 @@ import json
 import base64
 from itertools import zip_longest
 
-from telethon.types import ReplyInlineMarkup, User
+from telethon.tl.types import ReplyInlineMarkup, User
 from telethon.events import NewMessage
 from telethon.tl.custom import Button
 from sqlalchemy.ext.asyncio import AsyncSession
