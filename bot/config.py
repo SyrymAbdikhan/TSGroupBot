@@ -20,6 +20,7 @@ class Moodle:
     token: str
     url: str
     wsfunc: str
+    min_startdate: int
 
 
 @dataclass
