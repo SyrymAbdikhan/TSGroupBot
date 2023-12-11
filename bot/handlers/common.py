@@ -23,6 +23,7 @@ async def cmd_help(event: events.NewMessage.Event) -> None:
     text = 'Here is the bot commands:\n\n' \
            '/call - mention all members of the group\n' \
            '/deadlines - shows all deadlines\n' \
+           '/newq - creates new queue\n' \
            '/settoken - sets moodle token to get deadlines\n' \
            '/help - more information about bot\n\n' \
            'To get token, go to moodle > profile > ⚙️ Security keys > Moodle mobile web service\n\n' \
