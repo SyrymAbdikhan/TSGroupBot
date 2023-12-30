@@ -40,7 +40,7 @@ def get_Q_buttons(users: list | tuple | None = None, add_empty_spaces: int = 0) 
 
     start_at = len(users)+1
     buttons += [
-        [Button.inline(f'{start_at+i}. empty', str.encode(f'QE{start_at+i}'))]
+        [Button.inline(f'{start_at+i}. +', str.encode(f'QE{start_at+i}'))]
         for i in range(add_empty_spaces)
     ]
     buttons += [[Button.inline('Quit', 'quit')]]
@@ -53,7 +53,7 @@ def rows_to_buttons(button_rows, tag: str | None = None, target: bytes | None =N
     for i, row in enumerate(button_rows):
         btn = row.buttons[0]
         if tag in btn.text and tag:
-            buttons.append((f'{i+1}. empty', str.encode(f'QE{i+1}')))
+            buttons.append((f'{i+1}. +', str.encode(f'QE{i+1}')))
         elif btn.data == target:
             buttons.append((f'{i+1}. {tag}', str.encode(f'QT{i+1}')))
         else:
